@@ -22,7 +22,7 @@ type MedlineDocument struct {
 
 type MedlineDocuments []MedlineDocument
 
-func UnmarshallMedline(r io.Reader) MedlineDocuments {
+func UnmarshalMedline(r io.Reader) MedlineDocuments {
 	s := bufio.NewScanner(r)
 	var (
 		item    string
