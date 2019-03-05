@@ -15,7 +15,7 @@ type SemGroup struct {
 
 var groups map[string]SemGroup
 
-func loadSemGroups(input string) map[string]SemGroup {
+func LoadSemGroups(input string) map[string]SemGroup {
 	g := make(map[string]SemGroup)
 	s := bufio.NewScanner(bytes.NewBufferString(input))
 	for s.Scan() {
@@ -30,12 +30,16 @@ func loadSemGroups(input string) map[string]SemGroup {
 	return g
 }
 
-func Sem(tui string) (SemGroup, bool) {
+func MapSemGroup(tui string) (SemGroup, bool) {
 	if groups == nil {
-		groups = loadSemGroups(semGroups)
+		groups = LoadSemGroups(semGroups)
 	}
 	v, ok := groups[tui]
 	return v, ok
+}
+
+func DefaultSemGroups() map[string]SemGroup {
+	return LoadSemGroups(semGroups)
 }
 
 const semGroups = `ACTI|Activities & Behaviors|T052|Activity
