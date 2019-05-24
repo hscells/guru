@@ -10,13 +10,13 @@ import (
 )
 
 type UMLSClient struct {
-	client               *http.Client
+	client               http.Client
 	ticketGrantingTicket string
 }
 
 func NewUMLSClient(username, password string) (UMLSClient, error) {
 	var (
-		client *http.Client
+		client http.Client
 		umls   UMLSClient
 	)
 
@@ -55,6 +55,10 @@ func (c UMLSClient) Preferred(cui string) (string, error) {
 	if err != nil {
 		panic(err)
 		return "", err
+	}
+
+	if resp.StatusCode != 200 {
+		return "", nil
 	}
 
 	b, err = ioutil.ReadAll(resp.Body)

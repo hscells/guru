@@ -56,6 +56,9 @@ func UnmarshalMedline(r io.Reader) MedlineDocuments {
 				doc.PT = append(doc.PT, content...)
 			}
 			pair := strings.Split(line, "-")
+			if len(pair) <= 1 {
+				continue
+			}
 			item = strings.TrimSpace(pair[0])
 			content = []string{strings.TrimSpace(pair[1])}
 		}
