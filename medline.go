@@ -5,12 +5,15 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 )
 
 const (
 	PMID = "PMID"
 	TI   = "TI"
+	BTI  = "BTI"
+	CTI  = "CTI"
 	AB   = "AB"
 	MH   = "MH"
 	PT   = "PT"
@@ -36,6 +39,8 @@ func UnmarshalMedline(r io.Reader) MedlineDocuments {
 		Bnil int = iota
 		Bpmid
 		Bti
+		Bbti
+		Bcti
 		Bab
 		Bmh
 		Bpt
@@ -50,8 +55,19 @@ func UnmarshalMedline(r io.Reader) MedlineDocuments {
 	)
 	c := new(strings.Builder)
 	for s.Scan() {
+		// There are a number of articles without titles.
+		// These variables will store book and collection title values.
+		var bti, cti string
 		line := s.Bytes()
 		if len(line) == 0 && len(doc.PMID) > 0 {
+			if len(doc.TI) == 0 && len(bti) > 0 {
+				doc.TI = bti
+			} else if len(doc.TI) == 0 && len(cti) > 0 {
+				doc.TI = cti
+			}
+			if len(doc.TI) == 0 {
+				log.Printf("parsing %s with no title\n", doc.PMID)
+			}
 			docs = append(docs, doc)
 			doc = MedlineDocument{}
 		} else if len(line) >= 5 && bytes.Equal(line[:6], []byte("      ")) {
@@ -65,6 +81,10 @@ func UnmarshalMedline(r io.Reader) MedlineDocuments {
 				doc.PMID = c.String()
 			case Bti:
 				doc.TI = c.String()
+			case Bbti:
+				bti = c.String()
+			case Bcti:
+				cti = c.String()
 			case Bab:
 				doc.AB = c.String()
 			case Bdcom:
@@ -87,6 +107,10 @@ func UnmarshalMedline(r io.Reader) MedlineDocuments {
 				item = Bpmid
 			} else if bytes.Equal(p0, []byte(TI)) {
 				item = Bti
+			} else if bytes.Equal(p0, []byte(BTI)) {
+				item = Bbti
+			} else if bytes.Equal(p0, []byte(CTI)) {
+				item = Bcti
 			} else if bytes.Equal(p0, []byte(AB)) {
 				item = Bab
 			} else if bytes.Equal(p0, []byte(MH)) {
