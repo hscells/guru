@@ -30,13 +30,13 @@ func LoadSemTypes(input string) map[string]SemType {
 
 func MapSemType(abbr string) (SemType, bool) {
 	if types == nil {
-		types = LoadSemTypes(semTypes)
+		types = LoadSemTypes(SEMTYPES)
 	}
 	v, ok := types[abbr]
 	return v, ok
 }
 
-const semTypes = `aapp|T116|Amino Acid, Peptide, or Protein
+const SEMTYPES = `aapp|T116|Amino Acid, Peptide, or Protein
 acab|T020|Acquired Abnormality
 acty|T052|Activity
 aggp|T100|Age Group
